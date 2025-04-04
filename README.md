@@ -4,24 +4,18 @@
 3. getpagesize
 4. getrlimit
 
-## The translation process
-__https://en.wikipedia.org/wiki/Page_table#/media/File:Page_table_actions.svg__
-1. TLB Lookup - TLB is a small, fast cache located in the Memory Mgmt Unit. It stores recent mappings between virtual addresses and physical addresses.
-When a virtual address needs translation, the MMU first check the TLB to see if the mapping is already stored there.
+## The memory translation process
+_VIRTUAL MEMORY_ -> _PHYSICAL MEMORY_
 
-TLB Hit: If the mapping is found in the TLB, the physical address is returned.
+1. **TLB Lookup** - TLB is a cache that stores recent mappings between virtual addresses and physical addresses.
+When a virtual address needs translation, the MMU(Memory Mgmt Unit) first checks TLB.
 
-2. TLB Miss and Page Table Lookup
+	- **TLB Hit**: If the mapping is found in the TLB, the physical address is returned.
+	- **TLB Miss**: If the mapping is not found in the TLB, the MMU performs a page walk to look up the mapping in the page table.
 
-TLB Miss: If the mapping is not found in the TLB, the MMU performs a page walk to look up the mapping in the page table.
-The page table contains all mappings between virtual and physical adresses.
-
-3. Handling Page Table Results
-Mapping exists: if a valid mapping exists in the page table, it is returned to the MMU. The MMU writes this mapping back into the TLB so that future translations result in a TLB Hit.
-
-Mapping does not exist: If no valid mapping exists in the page table, a page fault occurs for 2 reasons.
-	1. Virtual address is invalid. It will cause a segmentation fault.
-	2. virtual address is not loaded in RAM. If the the virtual address corresponds to a valid page but is stored on disk, the OS retrieves the data from secondary storage(disk or SSD):
+		- **Page Table Results**
+			- Mapping exists: The MMU writes the mapping into the TLB so that future translations result in a TLB Hit.
+			- Mapping does not exist: A page fault occurs. If address is invalid **segmentation fault** is triggered. If address is not loaded in RAM, it is stored on disk. OS retrieves the data from disk and updates page table.
 
 ## Page
 a fixed-length block of virtual memory, described by a single entry in a page table. Computer memory is divided into pages so that information can be found more quickly.
