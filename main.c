@@ -1,21 +1,6 @@
-#include <sys/mman.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "ft_malloc.h"
 
-# define ALIGNING 16
-# define MAX_ZONES_COUNT 4
-# define TINY 128
-# define TINY_ZONE_SIZE 1024 // 1KB
-# define SMALL 4096 // 4KB
-# define SMALL_ZONE_SIZE 130048 // 127KB
-
-struct s_zones {
-        void** tiny_zones;
-        void** small_zones;
-};
-
-struct s_zones zones;
+struct s_zones zones = {0};
 
 /// find the next zone
 /// request memory if does not exist
@@ -25,8 +10,10 @@ void* get_next_zone(void** zones, void* current_zone, int zone_size) {
         while (zones[i] != NULL && zones[i] != current_zone && i <= MAX_ZONES_COUNT)
                 ++i;
 
-        if (i > MAX_ZONES_COUNT)
+        if (i > MAX_ZONES_COUNT) {
+                printf("OUT OF MEMORY!!");
                 return NULL;
+        }
 
         if (zones[i] != NULL && zones[i] == current_zone)
                 ++i;
@@ -107,7 +94,7 @@ void ft_free(void *ptr) {
 
                 // if chunk is not 1st one and prev chunk is free
                 if (!is_first_chunk(header) && !(*(int *)prev_footer & 1)) {
-                        printf("prev chunk is free\n");
+                        //printf("prev chunk is free\n");
                         void* prev_header = prev_footer - *(int *)prev_footer + 4;
                         *(int *)footer += *(int *)prev_header; // update the size
                         *(int *)prev_header += *(int *)header;
@@ -115,7 +102,7 @@ void ft_free(void *ptr) {
 
                 // if next chunk is free
                 if (!(*(int *)next_header & 1)) {
-                        printf("next chunk is free\n");
+                        //printf("next chunk is free\n");
                         void* next_footer = next_header + *(int *)next_header - 4;
                         // dynamically get header because it might combined with prev chunk
                         *(int *)(footer - *(int *)footer + 4) += *(int *)next_footer; // update header
@@ -143,20 +130,6 @@ void update_metadata(void* current_chunk, int size) {
         // footer
         *(int *)(current_chunk + size - 4) = size;
         *(int *)(current_chunk + size - 4) |= 1;
-}
-
-void** get_zone(const int aligned_size) {
-        if (aligned_size < TINY) return zones.tiny_zones;
-        if (aligned_size < SMALL) return zones.small_zones;
-
-        return NULL;
-}
-
-int get_zone_size(const int aligned_size) {
-        if (aligned_size < TINY) return TINY_ZONE_SIZE;
-        if (aligned_size < SMALL) return SMALL_ZONE_SIZE;
-
-        return 0;
 }
 
 void* ft_malloc(unsigned int size) {
@@ -194,41 +167,4 @@ void* ft_malloc(unsigned int size) {
         update_metadata(current_chunk, aligned_size);
 
         return (int *)current_chunk + 1; // move pointer 4 bytes to skip header
-}
-
-void test1() {
-        void* ptr = ft_malloc(16);
-        memset(ptr, 'A', 16);
-
-        void* ptr2 = ft_malloc(2);
-        memset(ptr2, 'B', 2);
-
-        void* ptr3 = ft_malloc(9);
-        memset(ptr3, 'C', 9);
-
-        ft_free(ptr2);
-
-        void* ptr4 = ft_malloc(20);
-        memset(ptr4, 'D', 20);
-
-        void* ptr5 = ft_malloc(2);
-        memset(ptr5, 'E', 2);
-
-        void* ptr6 = ft_malloc(24);
-        memset(ptr6, 'F', 24);
-
-        void* ptr7 = ft_malloc(19);
-        memset(ptr7, 'G',19);
-
-        void* ptr8 = ft_malloc(129);
-        memset(ptr8, 'A', 129);
-}
-
-// TODO: check if chunk is the last one in free
-int main() {
-        if (init_malloc() == -1)
-                return 1;
-
-        test1();
-        return 0;
 }
