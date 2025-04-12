@@ -1,20 +1,20 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fPIC
+CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
 NAME = libft_malloc.so
-SRCS = utils.c main.c
+SRCS = utils.c free.c malloc.c realloc.c
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-        $(CC) -shared -o $@ $^
+	$(CC) $(CFLAGS) -shared -o $@ $^
 
 clean:
-        rm -rf $(OBJS) $(BONUS_OBJS)
+	rm -rf $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-        rm -Rf $(NAME)
+	rm -Rf $(NAME)
 
 re: fclean all
 
