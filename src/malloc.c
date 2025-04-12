@@ -1,4 +1,4 @@
-#include "ft_malloc.h"
+#include "../includes/ft_malloc.h"
 
 struct s_heap heap = {0};
 
@@ -42,7 +42,7 @@ static void update_metadata(void *current_chunk, int size)
 
 void *malloc(size_t size)
 {
-	size = size + sizeof(int) * 2;					    // 2 ints to store metadata(header,footer)
+	size = size + sizeof(int) * 2;										// 2 ints to store metadata(header,footer)
 	const int aligned_size = (size + (ALIGNING - 1)) & ~(ALIGNING - 1); // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
 
 	if (aligned_size >= SMALL)

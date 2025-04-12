@@ -1,6 +1,6 @@
 ## Compile tests
 
-`make re && gcc -g my_tests.c -o test -L. -lft_malloc`
+`make re && gcc -g tests/my_tests.c -o test -L. -lft_malloc`
 
 ## Used functions
 

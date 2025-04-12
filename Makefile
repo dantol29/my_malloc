@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
 NAME = libft_malloc.so
-SRCS = utils.c free.c malloc.c realloc.c
+SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c
 
 OBJS = $(SRCS:.c=.o)
 
