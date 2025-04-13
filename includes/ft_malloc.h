@@ -7,6 +7,8 @@
 #define SMALL 4096             // 4KB
 #define SMALL_ZONE_SIZE 409600 // 400KB
 
+#define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
+
 #include <stddef.h>
 #include <sys/mman.h>
 #include <string.h>
@@ -37,8 +39,8 @@ void *realloc(void *ptr, size_t size);
 void free(void *ptr);
 
 // utils.c
-void *get_zone(const int aligned_size);
-int get_zone_size(const int aligned_size);
-void *allocate_zone(const int zone_size, struct s_zone *prev);
+void *get_zone(const size_t aligned_size);
+int get_zone_size(const size_t aligned_size);
+void *allocate_zone(const size_t zone_size, struct s_zone *prev);
 
 #endif

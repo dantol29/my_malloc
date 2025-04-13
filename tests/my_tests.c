@@ -51,16 +51,49 @@ void test_realloc()
     void *r7 = realloc(r6, 24); // should take r1 place
 }
 
-// void test_coalescing()
+void test_coalescing()
+{
+    void *c1 = malloc(16);
+    memset(c1, 'A', 16);
+
+    void *c2 = malloc(16);
+    memset(c2, 'B', 16);
+
+    void *c3 = malloc(4);
+    memset(c3, 'C', 4);
+
+    void *c4 = malloc(8);
+    memset(c4, 'D', 8);
+
+    free(c2); // not coales
+
+    free(c3); // coales with prev
+
+    free(c4); // coales with prev and next
+
+    free(c1); // coales with next
+
+    void *c5 = malloc(120); // fill first tiny zone
+    memset(c5, 'E', 120);
+
+    void *c6 = malloc(120); // fill second tiny zone
+    memset(c6, 'F', 120);
+
+    void *c7 = malloc(20); // start third tiny zone, so that 2nd has next and prev pointers set
+    memset(c7, 'G', 20);
+
+    free(c6); // not coales
+}
 
 // TODO:
 // 1. fix copy in realloc
-// 2. fix coalescing
+// 2. fix overflow
 // 3. add unmmap in free
 int main()
 {
-    // test_coalescing();
-    test_realloc();
-    test_zones();
+    // set TINY and TINY_SIZE to 128
+    test_coalescing();
+    // test_realloc();
+    // test_zones();
     return 0;
 }

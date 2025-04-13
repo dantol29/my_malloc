@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
+CFLAGS = -g -O2 -Wall -Wextra -Werror -fPIC
 NAME = libft_malloc.so
 SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c
 
