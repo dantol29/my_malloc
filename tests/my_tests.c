@@ -82,18 +82,34 @@ void test_coalescing()
     void *c7 = malloc(20); // start third tiny zone, so that 2nd has next and prev pointers set
     memset(c7, 'G', 20);
 
-    free(c6); // not coales
+    free(c6); // not coalescing
 }
 
-// TODO:
-// 1. fix copy in realloc
-// 2. fix overflow
-// 3. add unmmap in free
+void test_big_allocations()
+{
+    void *b1 = malloc(1024 * 1024); // 1M;
+    memset(b1, 'A', 1024 * 1024);
+
+    void *b2 = malloc(1024 * 1024); // 1M;
+    memset(b2, 'B', 1024 * 1024);
+
+    free(b1);
+    free(b2);
+
+    void *b3 = malloc(1024 * 1024);
+    memset(b3, 'C', 1024 * 1024);
+
+    free(b3);
+}
+
 int main()
 {
     // set TINY and TINY_SIZE to 128
     test_coalescing();
-    // test_realloc();
-    // test_zones();
+    test_realloc();
+    test_zones();
+    test_big_allocations();
+
+    show_alloc_mem();
     return 0;
 }

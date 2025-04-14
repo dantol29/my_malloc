@@ -2,6 +2,19 @@
 
 struct s_heap heap = {0};
 
+void show_alloc_mem()
+{
+	if (heap.tiny_zone)
+	{
+		if (write(1, "TINY :", 7) == -1)
+			return;
+		if (write(1, (void *)heap.tiny_zone, 4) == -1)
+			return;
+		if (write(1, "abc\n", 5) == -1)
+			return;
+	}
+}
+
 static void *create_large_allocation(const size_t aligned_size)
 {
 	struct s_zone *current_zone = get_zone(aligned_size);
@@ -19,6 +32,8 @@ static void *create_large_allocation(const size_t aligned_size)
 			current_zone = current_zone->next;
 		}
 	}
+
+	*(size_t *)((char *)current_zone + METADATA_SIZE) |= 1;
 
 	return (char *)current_zone + METADATA_SIZE + sizeof(size_t); // skip 2 pointers and boundary + size
 }
@@ -90,4 +105,10 @@ void *malloc(size_t size)
 	update_metadata(current_block, aligned_size);
 
 	return (char *)current_block + sizeof(size_t); // skip header
+}
+
+#include <stdio.h>
+__attribute__((constructor)) void init()
+{
+	printf("Custom library loaded via LD_PRELOAD!\n");
 }

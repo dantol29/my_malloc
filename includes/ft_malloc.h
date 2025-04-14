@@ -2,17 +2,17 @@
 #define FT_MALLOC_H
 
 #define ALIGNING 16
-#define TINY 128
-#define TINY_ZONE_SIZE 128     // 25600 25KB
+#define TINY 256
+#define TINY_ZONE_SIZE 25600   // 25600 25KB
 #define SMALL 4096             // 4KB
 #define SMALL_ZONE_SIZE 409600 // 400KB
 
 #define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
 
-#include <stddef.h>
-#include <sys/mman.h>
-#include <string.h>
-#include <stdio.h>
+#include <stddef.h>   // size_t
+#include <sys/mman.h> // mmap
+#include <unistd.h>
+#include "../libft/libft.h"
 
 struct s_zone
 {
@@ -31,6 +31,7 @@ extern struct s_heap heap;
 
 // malloc.c
 void *malloc(size_t size);
+void show_alloc_mem();
 
 // realloc.c
 void *realloc(void *ptr, size_t size);
@@ -42,5 +43,8 @@ void free(void *ptr);
 void *get_zone(const size_t aligned_size);
 int get_zone_size(const size_t aligned_size);
 void *allocate_zone(const size_t zone_size, struct s_zone *prev);
+
+// void* memset(void *str, int c, size_t n);
+// void* memcpy(void *dest, const void *src, size_t n);
 
 #endif

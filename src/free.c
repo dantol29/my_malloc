@@ -1,5 +1,41 @@
 #include "../includes/ft_malloc.h"
 
+static void free_large_allocation(void *ptr, size_t size)
+{
+    size_t total_size = size + sizeof(void *) * 2 + sizeof(size_t) * 2; // add 2 pointers and 2 boundaries
+
+    struct s_zone *beggining = (struct s_zone *)((char *)ptr - (sizeof(size_t) * 2 + sizeof(void *) * 2)); // skip size, start boundary and 2 ptrs
+    if (beggining == NULL)
+        return;
+
+    if (beggining->prev == NULL)
+    {
+        if (beggining->next)
+        {
+            heap.large_zone = beggining->next;
+            beggining->next->prev = NULL;
+        }
+        else
+            heap.large_zone = NULL;
+    }
+    else
+    {
+        if (beggining->next)
+        {
+            beggining->prev->next = beggining->next;
+            beggining->next->prev = beggining->prev;
+        }
+        else
+        {
+            if (beggining->prev->next)
+                beggining->prev->next = NULL;
+        }
+    }
+
+    if (munmap((void *)beggining, total_size) == -1)
+        return;
+}
+
 void free(void *ptr)
 {
     if (ptr == NULL)
@@ -11,6 +47,9 @@ void free(void *ptr)
     if (*(size_t *)header & 1)
     {
         const size_t size = *(size_t *)header - 1;
+        if (size > SMALL)
+            return free_large_allocation(ptr, size);
+
         void *footer = (char *)header + size - sizeof(size_t);
         void *prev_footer = (char *)header - sizeof(size_t);
         void *next_header = (char *)footer + sizeof(size_t);
