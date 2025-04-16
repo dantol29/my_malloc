@@ -17,14 +17,14 @@ void print_zone(struct s_zone *zone, size_t zone_size)
                 tmp -= 1;
                 taken_bytes += tmp;
             }
-            ft_printf("block: %p, ", current_block);
-            ft_printf("taken_butes: %u, ", taken_bytes);
-            ft_printf("tmp: %u\n", tmp);
+            // ft_printf("block: %p, ", current_block);
+            // ft_printf("taken_butes: %u, ", taken_bytes);
+            // ft_printf("tmp: %u\n", tmp);
             count += tmp;
             if (count >= zone_size)
             {
                 ft_printf("%p - ", (char *)zone + METADATA_SIZE);
-                ft_printf("%p : ", current_block);
+                ft_printf("%p : ", (char *)current_block + tmp);
                 ft_printf("%u bytes\n", taken_bytes);
                 break;
             }
@@ -50,9 +50,18 @@ void show_alloc_mem()
         print_zone(heap.small_zone, SMALL_ZONE_SIZE);
     }
 
-    // if (heap.large_zone)
-    // {
-    //     ft_printf("LARGE: %p\n", heap.large_zone);
-    //     print_zone(heap.large_zone);
-    // }
+    if (heap.large_zone)
+    {
+        ft_printf("LARGE: %p\n", heap.large_zone);
+        struct s_zone *current_zone = heap.large_zone;
+
+        while (current_zone)
+        {
+            size_t size = *(size_t *)((char *)current_zone + METADATA_SIZE);
+            ft_printf("%p - ", (char *)current_zone + METADATA_SIZE);
+            ft_printf("%p : ", (char *)current_zone + size);
+            ft_printf("%u bytes\n", size);
+            current_zone = current_zone->next;
+        }
+    }
 }

@@ -4,7 +4,7 @@ endif
 
 CC = gcc
 CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
-LIBFT = libft
+LIBPRINTF = libprintf
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK_NAME = libft_malloc.so
 SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c src/print.c
@@ -14,8 +14,8 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME) $(LINK_NAME)
 
 $(NAME): $(OBJS)
-	@make -C $(LIBFT)
-	$(CC) $(CFLAGS) -L./$(LIBFT) -lft -shared -o $@ $^
+	@make -C $(LIBPRINTF)
+	$(CC) $(CFLAGS) -L./$(LIBPRINTF) -lftprintf -shared -o $@ $^
 
 $(LINK_NAME): $(NAME)
 	ln -sf $(NAME) $(LINK_NAME)
@@ -25,6 +25,8 @@ clean:
 
 fclean: clean
 	rm -rf $(NAME) $(LINK_NAME)
+	rm -rf $(LIBPRINTF)/*.o
+	rm -rf $(LIBPRINTF)/*.a
 
 re: fclean all
 

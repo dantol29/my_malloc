@@ -11,7 +11,7 @@
 
 #include <stddef.h>   // size_t
 #include <sys/mman.h> // mmap
-#include "../libft/libft.h"
+#include "../libprintf/ft_printf.h"
 
 struct s_zone
 {
@@ -42,8 +42,6 @@ void free(void *ptr);
 void *get_zone(const size_t aligned_size);
 int get_zone_size(const size_t aligned_size);
 void *allocate_zone(const size_t zone_size, struct s_zone *prev);
-
-// void* memset(void *str, int c, size_t n);
-// void* memcpy(void *dest, const void *src, size_t n);
+void *ft_memcpy(void *dest, const void *src, size_t n);
 
 #endif

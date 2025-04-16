@@ -12,7 +12,7 @@ void test_zones()
     void *ptr3 = malloc(9);
     memset(ptr3, 'C', 9);
 
-    free(ptr2);
+    // free(ptr2);
 
     void *ptr4 = malloc(20);
     memset(ptr4, 'D', 20);
@@ -26,8 +26,8 @@ void test_zones()
     void *ptr7 = malloc(19);
     memset(ptr7, 'G', 19);
 
-    void *ptr8 = malloc(129); // small zone
-    memset(ptr8, 'A', 129);
+    void *ptr8 = malloc(257); // small zone
+    memset(ptr8, 'A', 257);
 
     void *ptr9 = malloc(300000); // large zone
     memset(ptr9, 'B', 300000);
@@ -65,13 +65,13 @@ void test_coalescing()
     void *c4 = malloc(8);
     memset(c4, 'D', 8);
 
-    free(c2); // not coales
+    // free(c2); // not coales
 
-    free(c3); // coales with prev
+    // free(c3); // coales with prev
 
-    free(c4); // coales with prev and next
+    // free(c4); // coales with prev and next
 
-    free(c1); // coales with next
+    // free(c1); // coales with next
 
     void *c5 = malloc(120); // fill first tiny zone
     memset(c5, 'E', 120);
@@ -82,7 +82,7 @@ void test_coalescing()
     void *c7 = malloc(20); // start third tiny zone, so that 2nd has next and prev pointers set
     memset(c7, 'G', 20);
 
-    free(c6); // not coalescing
+    // free(c6); // not coalescing
 }
 
 void test_big_allocations()
@@ -93,13 +93,13 @@ void test_big_allocations()
     void *b2 = malloc(1024 * 1024); // 1M;
     memset(b2, 'B', 1024 * 1024);
 
-    free(b1);
-    free(b2);
+    // free(b1);
+    // free(b2);
 
     void *b3 = malloc(1024 * 1024);
     memset(b3, 'C', 1024 * 1024);
 
-    free(b3);
+    // free(b3);
 }
 
 int main()

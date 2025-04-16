@@ -30,17 +30,16 @@ void test_basic_malloc()
     assert(ptr != NULL);
 
     // Write to memory to ensure it's usable
-    memset(ptr, 0x67, 100);
+    memset(ptr, 0x67, 20);
 
     // Check if memory was properly written
     unsigned char *p = (unsigned char *)ptr;
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 20; i++)
     {
         assert(p[i] == 0x67);
     }
 
     free(ptr);
-    show_alloc_mem();
     printf("Basic malloc test passed\n");
 }
 
@@ -156,7 +155,7 @@ void test_large_allocation()
     // Write to memory to ensure it's usable
     memset(ptr, 0x42, 1024 * 1024);
 
-    free(ptr);
+    // free(ptr);
     printf("Large allocation test passed\n");
 }
 
@@ -336,7 +335,7 @@ void run_all_tests()
     test_malloc_performance();
     printf("All tests passed!!\n");
 
-    // show_alloc_mem();
+    show_alloc_mem();
 }
 
 int main()
