@@ -78,10 +78,10 @@ void test_malloc()
         }
     }
 
-    for (int i = 0; i < num_allocations; i++)
-    {
-        free(allocations[i]);
-    }
+    // for (int i = 0; i < num_allocations; i++)
+    // {
+    //     free(allocations[i]);
+    // }
 
     printf("All tests passed!\n");
 }
@@ -89,5 +89,6 @@ void test_malloc()
 int main()
 {
     test_malloc();
+    show_alloc_mem();
     return 0;
 }

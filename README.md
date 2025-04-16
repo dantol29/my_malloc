@@ -1,5 +1,6 @@
-## Malloc's Heap
+## Malloc's Heap (Tiny and Small zones)
 
+For each request that is > SMALL, a syscall to mmap is performed
 ![Zone scheme](/zone.png)
 
 ## Compile tests
@@ -11,11 +12,17 @@
 1. mmap - request memory from os
 2. munmap - return memory to os
 
+## Features
+
+1. Coalescing
+2. Arenas for small allocations
+
 ## Possible improvements
 
 1. A linked list of free blocks to reduce search time
 2. A global variable that points to the last large zone allocation to reduce search time
 3. Carefully chosen zone sizes to find good compromise between space and speed
+4. Remove tiny and small zones once empty
 
 ## The memory translation process
 
