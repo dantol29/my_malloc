@@ -1,6 +1,6 @@
-#include "../includes/ft_malloc.h"
+#include "../includes/ft_malloc_internal.h"
 
-void print_zone(struct s_zone *zone, size_t zone_size)
+static void print_zone(struct s_zone *zone, size_t zone_size)
 {
     while (zone)
     {

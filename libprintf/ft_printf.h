@@ -11,23 +11,28 @@
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#define FT_PRINTF_H
 
-# include <stdlib.h>
-# include <stdarg.h>
-# include <unistd.h>
-# include <stdint.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <stdint.h>
 
-int		ft_printf(const char *format, ...);
-size_t	ft_strlen(const char *str);
-char	*ft_strchr(const char *str, int c);
-char	*ft_itoa(int n);
-void	ft_putchar(char c);
-int		ft_putstr(char *str);
-void	ft_putnbr(int nb);
-int		ft_print_number(int n);
-int		ft_print_ptr(unsigned long long ptr);
-int		ft_print_unsigned_int(unsigned int n);
-int		ft_print_hex(const char format, unsigned int args);
+#pragma GCC visibility push(hidden) // make functions hidden to library users
+
+int ft_printf(const char *format, ...);
+
+size_t ft_strlen(const char *str);
+char *ft_strchr(const char *str, int c);
+char *ft_itoa(int n);
+void ft_putchar(char c);
+int ft_putstr(char *str);
+void ft_putnbr(int nb);
+int ft_print_number(int n);
+int ft_print_ptr(unsigned long long ptr);
+int ft_print_unsigned_int(unsigned int n);
+int ft_print_hex(const char format, unsigned int args);
+
+#pragma GCC visibility pop
 
 #endif

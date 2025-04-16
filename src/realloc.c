@@ -1,3 +1,4 @@
+#include "../includes/ft_malloc_internal.h"
 #include "../includes/ft_malloc.h"
 
 void *realloc(void *ptr, size_t size)
@@ -12,7 +13,7 @@ void *realloc(void *ptr, size_t size)
 
     void *header = (size_t *)ptr - 1;
     if (header == NULL || !(*(size_t *)header & 1))
-        return malloc(size);
+        return NULL;
 
     size_t old_size = *(size_t *)header - 1;
     const size_t size_with_metadata = size + sizeof(size_t) * 2;

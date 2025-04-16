@@ -1,4 +1,4 @@
-#include "../includes/ft_malloc.h"
+#include "../includes/ft_malloc_internal.h"
 
 static void free_large_allocation(void *ptr, size_t size)
 {

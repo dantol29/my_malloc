@@ -1,4 +1,4 @@
-#include "../includes/ft_malloc.h"
+#include "../includes/ft_malloc_internal.h"
 
 void *get_zone(const size_t aligned_size)
 {

@@ -1,4 +1,4 @@
-#include "../includes/ft_malloc.h"
+#include "../includes/ft_malloc_internal.h"
 
 struct s_heap heap = {0};
 
