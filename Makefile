@@ -7,7 +7,7 @@ CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
 LIBFT = libft
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK_NAME = libft_malloc.so
-SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c
+SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c src/print.c
 
 OBJS = $(SRCS:.c=.o)
 

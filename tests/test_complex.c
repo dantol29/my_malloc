@@ -40,6 +40,7 @@ void test_basic_malloc()
     }
 
     free(ptr);
+    show_alloc_mem();
     printf("Basic malloc test passed\n");
 }
 
@@ -326,7 +327,7 @@ void run_all_tests()
     test_malloc_zero();
     test_multiple_allocations();
     test_free_and_reuse();
-    // test_memory_alignment();
+    test_memory_alignment();
     test_large_allocation();
     test_stress();
     test_malloc_free_cycle();
@@ -334,6 +335,8 @@ void run_all_tests()
     test_boundary_conditions();
     test_malloc_performance();
     printf("All tests passed!!\n");
+
+    // show_alloc_mem();
 }
 
 int main()

@@ -31,7 +31,7 @@ void test_malloc()
 
     // Test 3: Allocate zero bytes
     ptr = malloc(0);
-    assert(ptr != NULL);
+    assert(ptr == NULL);
     if (ptr)
         free(ptr);
 

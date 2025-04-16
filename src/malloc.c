@@ -2,19 +2,6 @@
 
 struct s_heap heap = {0};
 
-void show_alloc_mem()
-{
-	if (heap.tiny_zone)
-	{
-		if (write(1, "TINY :", 7) == -1)
-			return;
-		if (write(1, (void *)heap.tiny_zone, 4) == -1)
-			return;
-		if (write(1, "abc\n", 5) == -1)
-			return;
-	}
-}
-
 static void *create_large_allocation(const size_t aligned_size)
 {
 	struct s_zone *current_zone = get_zone(aligned_size);
@@ -61,6 +48,9 @@ static void update_metadata(void *current_block, size_t size)
 
 void *malloc(size_t size)
 {
+	if (size == 0)
+		return NULL;
+
 	size = size + sizeof(size_t) * 2;									   // 2 fields to store header and footer
 	const size_t aligned_size = (size + (ALIGNING - 1)) & ~(ALIGNING - 1); // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
 	const size_t zone_size = get_zone_size(aligned_size);
@@ -107,8 +97,7 @@ void *malloc(size_t size)
 	return (char *)current_block + sizeof(size_t); // skip header
 }
 
-#include <stdio.h>
 __attribute__((constructor)) void init()
 {
-	printf("Custom library loaded via LD_PRELOAD!\n");
+	ft_printf("Custom library loaded via LD_PRELOAD!\n");
 }

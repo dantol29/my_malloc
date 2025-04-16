@@ -11,7 +11,6 @@
 
 #include <stddef.h>   // size_t
 #include <sys/mman.h> // mmap
-#include <unistd.h>
 #include "../libft/libft.h"
 
 struct s_zone
