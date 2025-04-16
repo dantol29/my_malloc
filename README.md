@@ -10,8 +10,12 @@
 
 1. mmap - request memory from os
 2. munmap - return memory to os
-3. getpagesize
-4. getrlimit
+
+## Possible improvements
+
+1. A linked list of free blocks to reduce search time
+2. A global variable that points to the last large zone allocation to reduce search time
+3. Carefully chosen zone sizes to find good compromise between space and speed
 
 ## The memory translation process
 

@@ -57,7 +57,7 @@ void show_alloc_mem()
 
         while (current_zone)
         {
-            size_t size = *(size_t *)((char *)current_zone + METADATA_SIZE);
+            size_t size = *(size_t *)((char *)current_zone + METADATA_SIZE) - 1; // because last bit is allocated
             ft_printf("%p - ", (char *)current_zone + METADATA_SIZE);
             ft_printf("%p : ", (char *)current_zone + size);
             ft_printf("%u bytes\n", size);

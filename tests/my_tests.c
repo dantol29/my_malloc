@@ -105,9 +105,9 @@ void test_big_allocations()
 int main()
 {
     // set TINY and TINY_SIZE to 128
+    test_zones();
     test_coalescing();
     test_realloc();
-    test_zones();
     test_big_allocations();
 
     show_alloc_mem();
