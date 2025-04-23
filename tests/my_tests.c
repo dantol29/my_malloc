@@ -65,13 +65,13 @@ void test_coalescing()
     void *c4 = malloc(8);
     memset(c4, 'D', 8);
 
-    // free(c2); // not coales
+    free(c2); // not coales
 
-    // free(c3); // coales with prev
+    free(c3); // coales with prev
 
-    // free(c4); // coales with prev and next
+    free(c4); // coales with prev and next
 
-    // free(c1); // coales with next
+    free(c1); // coales with next
 
     void *c5 = malloc(120); // fill first tiny zone
     memset(c5, 'E', 120);
@@ -82,7 +82,7 @@ void test_coalescing()
     void *c7 = malloc(20); // start third tiny zone, so that 2nd has next and prev pointers set
     memset(c7, 'G', 20);
 
-    // free(c6); // not coalescing
+    free(c6); // not coalescing
 }
 
 void test_big_allocations()
@@ -105,8 +105,8 @@ void test_big_allocations()
 int main()
 {
     // set TINY and TINY_SIZE to 128
-    test_zones();
     test_coalescing();
+    test_zones();
     test_realloc();
     test_big_allocations();
 

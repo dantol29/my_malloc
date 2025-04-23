@@ -5,7 +5,7 @@ For each request that is > SMALL, a syscall to mmap is performed
 
 ## Compile tests
 
-`make re && gcc -g tests/test_complex.c -o test -L. -lft_malloc && ./test`
+`make re && gcc -g tests/test_complex.c -o test -L. -lft_malloc -Wl,-rpath=. && ./test`
 
 ## Used functions
 
@@ -22,7 +22,7 @@ For each request that is > SMALL, a syscall to mmap is performed
 1. A linked list of free blocks to reduce search time
 2. A global variable that points to the last large zone allocation to reduce search time
 3. Carefully chosen zone sizes to find good compromise between space and speed
-4. Remove tiny and small zones once empty
+4. Return tiny and small zones to OS once empty
 
 ## The memory translation process
 
