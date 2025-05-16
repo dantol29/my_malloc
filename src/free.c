@@ -2,13 +2,14 @@
 
 static void free_large_allocation(void *ptr, size_t size)
 {
-    size_t total_size = size + sizeof(void *) * 2 + sizeof(size_t) * 2; // add 2 pointers and 2 boundaries
+    const size_t additional_metadata = sizeof(void *) * 2 + sizeof(size_t) * 2; // 2 pointers and 2 boundaries
+    const size_t total_size = size + additional_metadata;                       // TODO: double check this, might be more
 
-    struct s_zone *beggining = (struct s_zone *)((char *)ptr - (sizeof(size_t) * 2 + sizeof(void *) * 2)); // skip size, start boundary and 2 ptrs
+    struct s_zone *beggining = (struct s_zone *)((char *)ptr - additional_metadata);
     if (beggining == NULL)
         return;
 
-    if (beggining->prev == NULL)
+    if (beggining->prev == NULL) // first zone
     {
         if (beggining->next)
         {
@@ -25,7 +26,7 @@ static void free_large_allocation(void *ptr, size_t size)
             beggining->prev->next = beggining->next;
             beggining->next->prev = beggining->prev;
         }
-        else
+        else // last zone
         {
             if (beggining->prev->next)
                 beggining->prev->next = NULL;
@@ -33,7 +34,7 @@ static void free_large_allocation(void *ptr, size_t size)
     }
 
     if (munmap((void *)beggining, total_size) == -1)
-        return;
+        return; // perror?
 }
 
 void free(void *ptr)

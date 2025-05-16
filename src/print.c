@@ -5,31 +5,29 @@ static void print_zone(struct s_zone *zone, size_t zone_size)
     while (zone)
     {
         void *current_block = (void *)((char *)zone + METADATA_SIZE);
-        size_t tmp = 0;
+        size_t block_size = 0;
         size_t count = 0;
-        size_t taken_bytes = 0;
+        size_t total_bytes_allocated = 0;
 
         while (current_block)
         {
-            tmp = *(size_t *)current_block;
+            block_size = *(size_t *)current_block;
             if (*(size_t *)current_block & 1)
             {
-                tmp -= 1;
-                taken_bytes += tmp;
+                block_size -= 1;
+                total_bytes_allocated += block_size;
             }
-            // ft_printf("block: %p, ", current_block);
-            // ft_printf("taken_butes: %u, ", taken_bytes);
-            // ft_printf("tmp: %u\n", tmp);
-            count += tmp;
+
+            count += block_size;
             if (count >= zone_size)
             {
                 ft_printf("%p - ", (char *)zone + METADATA_SIZE);
-                ft_printf("%p : ", (char *)current_block + tmp);
-                ft_printf("%u bytes\n", taken_bytes);
+                ft_printf("%p : ", (char *)current_block + block_size);
+                ft_printf("%u bytes\n", total_bytes_allocated);
                 break;
             }
 
-            current_block = (char *)current_block + tmp;
+            current_block = (char *)current_block + block_size;
         }
 
         zone = zone->next;
@@ -57,7 +55,7 @@ void show_alloc_mem()
 
         while (current_zone)
         {
-            size_t size = *(size_t *)((char *)current_zone + METADATA_SIZE) - 1; // because last bit is allocated
+            size_t size = *(size_t *)((char *)current_zone + METADATA_SIZE) - 1; // last bit is allocated
             ft_printf("%p - ", (char *)current_zone + METADATA_SIZE);
             ft_printf("%p : ", (char *)current_zone + size);
             ft_printf("%u bytes\n", size);

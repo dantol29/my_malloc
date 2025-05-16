@@ -62,7 +62,16 @@ void *ft_memcpy(void *dest, const void *src, size_t n)
         while (i < n)
         {
                 d[i] = s[i];
-                i++;
+                ++i;
         }
-        return (dest);
+        return dest;
+}
+
+inline void align_size(size_t *size)
+{
+        if (!size)
+                return;
+
+        *size = *size + sizeof(size_t) * 2;                 // 2 fields to store header and footer
+        *size = (*size + (ALIGNING - 1)) & ~(ALIGNING - 1); // // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
 }

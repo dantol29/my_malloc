@@ -5,8 +5,6 @@
 
 void test_realloc()
 {
-    printf("Testing realloc...\n");
-
     // Test 1: Reallocate NULL pointer
     void *ptr = realloc(NULL, 10);
     assert(ptr != NULL);
@@ -20,6 +18,8 @@ void test_realloc()
     ptr = realloc(ptr, 20);
     assert(ptr != NULL);
     assert(((char *)ptr)[0] == 'A');
+    assert(((char *)ptr)[9] == 'A');
+    assert(((char *)ptr)[10] != 'A');
     free(ptr);
 
     // Test 3: Reallocate to a smaller size
@@ -29,6 +29,7 @@ void test_realloc()
     ptr = realloc(ptr, 10);
     assert(ptr != NULL);
     assert(((char *)ptr)[0] == 'B');
+    assert(((char *)ptr)[9] == 'B');
     free(ptr);
 
     // Test 4: Reallocate with size zero (should free memory)
@@ -43,5 +44,6 @@ void test_realloc()
 int main()
 {
     test_realloc();
+    show_alloc_mem();
     return 0;
 }

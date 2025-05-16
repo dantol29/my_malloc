@@ -2,30 +2,25 @@
 
 struct s_heap heap = {0};
 
-static void *create_large_allocation(const size_t aligned_size)
+static void *create_large_allocation(const size_t aligned_size, struct s_zone *current_zone)
 {
-	struct s_zone *current_zone = get_zone(aligned_size);
-	if (current_zone == NULL)
+	if (!current_zone)
 		return NULL;
 
 	while (*((char *)current_zone + METADATA_SIZE) & 1)
 	{
-		if (current_zone->next == NULL)
-		{
+		if (!current_zone->next)
 			current_zone = allocate_zone(aligned_size, current_zone);
-		}
 		else
-		{
 			current_zone = current_zone->next;
-		}
 	}
 
 	*(size_t *)((char *)current_zone + METADATA_SIZE) |= 1;
 
-	return (char *)current_zone + METADATA_SIZE + sizeof(size_t); // skip 2 pointers and boundary + size
+	return (char *)current_zone + METADATA_SIZE + sizeof(size_t); // skip 2 pointers and boundary + header
 }
 
-static void update_metadata(void *current_block, size_t size)
+static void update_metadata(void *current_block, const size_t size)
 {
 	// divide block into 2 pieces if request does not occuppy all space
 	if (size < *(size_t *)current_block)
@@ -51,31 +46,30 @@ void *malloc(size_t size)
 	if (size == 0)
 		return NULL;
 
-	size = size + sizeof(size_t) * 2;									   // 2 fields to store header and footer
-	const size_t aligned_size = (size + (ALIGNING - 1)) & ~(ALIGNING - 1); // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
-	const size_t zone_size = get_zone_size(aligned_size);
+	align_size(&size);
 
-	if (aligned_size >= SMALL)
-		return create_large_allocation(aligned_size);
-
-	struct s_zone *current_zone = get_zone(aligned_size);
+	struct s_zone *current_zone = get_zone(size);
 	if (current_zone == NULL)
 		return NULL;
 
+	if (size >= SMALL)
+		return create_large_allocation(size, current_zone);
+
 	void *current_block = (char *)current_zone + METADATA_SIZE; // skip 2 pointers + boundary
+	const size_t zone_size = get_zone_size(size);
 	size_t taken_bytes = 0;
-	size_t tmp;
+	size_t block_size;
 
 	// while bit is set or block is smaller than requested size
-	while (*(size_t *)current_block & 1 || *(size_t *)current_block < aligned_size)
+	while (*(size_t *)current_block & 1 || *(size_t *)current_block < size)
 	{
-		tmp = *(size_t *)current_block;
+		block_size = *(size_t *)current_block;
 		if (*(size_t *)current_block & 1)
-			tmp -= 1;
+			block_size -= 1;
 
-		taken_bytes += tmp;
-		if (taken_bytes >= zone_size)
-		{ // the end of the zone
+		taken_bytes += block_size;
+		if (taken_bytes >= zone_size) // the end of the zone
+		{
 			if (current_zone->next == NULL)
 			{
 				current_zone->next = allocate_zone(zone_size, current_zone);
@@ -89,10 +83,10 @@ void *malloc(size_t size)
 			continue;
 		}
 
-		current_block = (char *)current_block + tmp;
+		current_block = (char *)current_block + block_size;
 	}
 
-	update_metadata(current_block, aligned_size);
+	update_metadata(current_block, size);
 
 	return (char *)current_block + sizeof(size_t); // skip header
 }
