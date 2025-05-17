@@ -18,9 +18,9 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#pragma GCC visibility push(hidden) // make functions hidden to library users
-
 int ft_printf(const char *format, ...);
+
+#pragma GCC visibility push(hidden) // make functions hidden to library users
 
 size_t ft_strlen(const char *str);
 char *ft_strchr(const char *str, int c);

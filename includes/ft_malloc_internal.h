@@ -16,11 +16,11 @@ inline static size_t get_page_size()
 
 #define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
 
-#define ALIGNING (sizeof(void *) * 2) // 16
+#define ALIGNING sizeof(void*) * 2 // 16
 #define TINY 256
 #define SMALL get_page_size()
-#define TINY_ZONE_SIZE get_page_size() * 6 - METADATA_SIZE - sizeof(size_t)
-#define SMALL_ZONE_SIZE get_page_size() * 100 - METADATA_SIZE - sizeof(size_t)
+#define TINY_ZONE_SIZE get_page_size() * 7 - METADATA_SIZE - sizeof(size_t)
+#define SMALL_ZONE_SIZE get_page_size() * 101 - METADATA_SIZE - sizeof(size_t)
 
 
 // zone memory structure:
@@ -37,6 +37,7 @@ struct s_heap
     struct s_zone *tiny_zone;
     struct s_zone *small_zone;
     struct s_zone *large_zone;
+    struct s_zone *free_zones;
 };
 
 #pragma GCC visibility push(hidden) // make functions hidden to library users

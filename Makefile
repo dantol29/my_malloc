@@ -15,7 +15,7 @@ all: $(NAME) $(LINK_NAME)
 
 $(NAME): $(OBJS)
 	@make -C $(LIBPRINTF)
-	$(CC) $(CFLAGS) -L./$(LIBPRINTF) -lftprintf -shared -o $@ $^
+	$(CC) $(CFLAGS) -shared -o $@ $^ -L./$(LIBPRINTF) -lftprintf -Wl,-rpath,'$$ORIGIN/$(LIBPRINTF)'
 
 $(LINK_NAME): $(NAME)
 	ln -sf $(NAME) $(LINK_NAME)

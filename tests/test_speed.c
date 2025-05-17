@@ -1,9 +1,10 @@
 #include <stdio.h>
-// #include <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "../includes/ft_malloc.h"
 
-#define NUM_ALLOCATIONS 10000
+#define NUM_ALLOCATIONS 1024
 
 void benchmark_malloc()
 {
@@ -14,14 +15,15 @@ void benchmark_malloc()
     start = clock();
     for (int i = 0; i < NUM_ALLOCATIONS; i++)
     {
-        pointers[i] = malloc(50);
+        pointers[i] = malloc(1024);
+	memset(pointers[i], 'A', 1024);
     }
     end = clock();
     printf("Allocation time: %lf ms\n", (double)(end - start) / CLOCKS_PER_SEC * 1000);
 
     // Measure deallocation speed
     start = clock();
-    for (int i = 0; i < NUM_ALLOCATIONS; i++)
+    ifor (int i = 0; i < NUM_ALLOCATIONS; i++)
     {
         free(pointers[i]);
     }

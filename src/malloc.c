@@ -1,4 +1,5 @@
 #include "../includes/ft_malloc_internal.h"
+#include "../includes/ft_malloc.h"
 
 struct s_heap heap = {0};
 
@@ -98,5 +99,7 @@ __attribute__((constructor)) void init()
 
 __attribute__((destructor)) void des()
 {
-	write(2, "DESTRUCTOR via LD_PRELOAD!\n", 27);
+        ft_printf("END!\n");
+	show_alloc_mem();
 }
+

@@ -110,6 +110,5 @@ int main()
     test_realloc();
     test_big_allocations();
 
-    show_alloc_mem();
     return 0;
 }
