@@ -14,13 +14,17 @@ inline static size_t get_page_size()
 #endif
 }
 
-#define ALIGNING 16
+#define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
+
+#define ALIGNING (sizeof(void *) * 2) // 16
 #define TINY 256
 #define SMALL get_page_size()
-#define TINY_ZONE_SIZE get_page_size() * 6
-#define SMALL_ZONE_SIZE get_page_size() * 100 // 400KB
+#define TINY_ZONE_SIZE get_page_size() * 6 - METADATA_SIZE - sizeof(size_t)
+#define SMALL_ZONE_SIZE get_page_size() * 100 - METADATA_SIZE - sizeof(size_t)
 
-#define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
+
+// zone memory structure:
+// void* next_zone, void* prev_zone, size_t start_boundary, (zone), size_t end_boundary
 
 struct s_zone
 {

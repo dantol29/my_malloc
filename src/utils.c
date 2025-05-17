@@ -35,7 +35,7 @@ int get_zone_size(const size_t aligned_size)
 
 void *allocate_zone(const size_t zone_size, struct s_zone *prev)
 {
-        struct s_zone *zone = mmap(0, sizeof(struct s_zone) + zone_size + sizeof(size_t) * 2, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+        struct s_zone *zone = mmap(0, sizeof(void *) * 2 + sizeof(size_t) + zone_size + sizeof(size_t), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
         if (zone == MAP_FAILED)
                 return NULL;
 
@@ -73,5 +73,5 @@ inline void align_size(size_t *size)
                 return;
 
         *size = *size + sizeof(size_t) * 2;                 // 2 fields to store header and footer
-        *size = (*size + (ALIGNING - 1)) & ~(ALIGNING - 1); // // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
+        *size = (*size + (ALIGNING - 1)) & ~(ALIGNING - 1); // align to the nearest multiplier of ALIGNING (16 -> 16,32,48)
 }

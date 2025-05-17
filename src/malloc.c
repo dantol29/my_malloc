@@ -95,3 +95,8 @@ __attribute__((constructor)) void init()
 {
 	ft_printf("Custom library loaded via LD_PRELOAD!\n");
 }
+
+__attribute__((destructor)) void des()
+{
+	write(2, "DESTRUCTOR via LD_PRELOAD!\n", 27);
+}
