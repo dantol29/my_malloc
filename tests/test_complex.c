@@ -3,6 +3,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 #include "../includes/ft_malloc.h"
 
 int is_memory_writable(void *ptr, size_t size)
@@ -165,13 +167,11 @@ void test_malloc_free_cycle()
 {
     printf("Testing malloc-free cycles...\n");
 
-    // Perform many malloc-free cycles
     for (int i = 0; i < 1000; i++)
     {
         void *ptr = malloc(i % 200 + 1);
         assert(ptr != NULL);
 
-        // Write some data
         memset(ptr, 0x55, i % 200 + 1);
 
         free(ptr);
@@ -187,34 +187,28 @@ void test_fragmentation()
 #define NUM_BLOCKS 100
     void *blocks[NUM_BLOCKS];
 
-    // Allocate blocks of increasing size
     for (int i = 0; i < NUM_BLOCKS; i++)
     {
         blocks[i] = malloc((i + 1) * 16);
         assert(blocks[i] != NULL);
     }
 
-    // Free every other block to create fragmentation
     for (int i = 0; i < NUM_BLOCKS; i += 2)
     {
         free(blocks[i]);
         blocks[i] = NULL;
     }
 
-    // Now allocate blocks that should fit in the holes
     for (int i = 0; i < NUM_BLOCKS; i += 2)
     {
-        blocks[i] = malloc((i + 1) * 8); // Smaller than original
+        blocks[i] = malloc((i + 1) * 8);
         assert(blocks[i] != NULL);
     }
 
-    // Free all blocks
     for (int i = 0; i < NUM_BLOCKS; i++)
     {
         if (blocks[i] != NULL)
-        {
             free(blocks[i]);
-        }
     }
 
     printf("Fragmentation test passed\n");
@@ -224,17 +218,14 @@ void test_boundary_conditions()
 {
     printf("Testing boundary conditions...\n");
 
-    // Test very small allocations
     void *ptr1 = malloc(1);
     assert(ptr1 != NULL);
 
-    // Test odd-sized allocations
     void *ptr2 = malloc(3);
     assert(ptr2 != NULL);
     void *ptr3 = malloc(7);
     assert(ptr3 != NULL);
 
-    // Test allocation sizes near power-of-two boundaries
     void *ptr4 = malloc(31);
     assert(ptr4 != NULL);
     void *ptr5 = malloc(32);
@@ -244,13 +235,12 @@ void test_boundary_conditions()
     void *ptr7 = malloc(34);
     assert(ptr7 != NULL);
 
-    // Free all allocations
-    // free(ptr1);
-    // free(ptr2);
-    // free(ptr3);
-    // free(ptr4);
-    // free(ptr5);
-    // free(ptr6);
+    free(ptr1);
+    free(ptr2);
+    free(ptr3);
+    free(ptr4);
+    free(ptr5);
+    free(ptr6);
 
     printf("Boundary conditions test passed\n");
 }
@@ -286,24 +276,23 @@ void run_all_tests()
 {
     printf("Running malloc and free tests...\n");
 
-    // test_basic_malloc();
-    // test_malloc_zero();
-    // test_multiple_allocations();
-    // test_free_and_reuse();
-    // test_memory_alignment();
-    // test_large_allocation();
+    test_basic_malloc();
+    test_malloc_zero();
+    test_multiple_allocations();
+    test_free_and_reuse();
+    test_memory_alignment();
+    test_large_allocation();
     test_stress();
     test_malloc_free_cycle();
     test_fragmentation();
     test_boundary_conditions();
     test_malloc_performance();
     printf("All tests passed!!\n");
-
-    show_alloc_mem();
 }
 
 int main()
 {
     run_all_tests();
+    show_alloc_mem();
     return 0;
 }

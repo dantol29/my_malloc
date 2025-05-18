@@ -63,7 +63,7 @@ void test_malloc()
     free(ptr3);
 
     // Test 5: Stress test with many small allocations
-    const int num_allocations = 10000;
+    const int num_allocations = 50000;
     void *allocations[num_allocations];
 
     for (int i = 0; i < num_allocations; i++)
@@ -78,10 +78,8 @@ void test_malloc()
         }
     }
 
-    // for (int i = 0; i < num_allocations; i++)
-    // {
-    //     free(allocations[i]);
-    // }
+    for (int i = 0; i < num_allocations; i++)
+        free(allocations[i]);
 
     printf("All tests passed!\n");
 }

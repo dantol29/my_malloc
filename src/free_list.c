@@ -2,6 +2,9 @@
 
 void push_to_free_list(void *free_block, void **head)
 {
+    if (!head)
+        return;
+
     *(uintptr_t *)((char *)free_block + NEXT) = (uintptr_t)*head;
     *(uintptr_t *)((char *)free_block + PREV) = 0;
 
@@ -13,6 +16,9 @@ void push_to_free_list(void *free_block, void **head)
 
 void remove_from_free_list(void *free_block, void **head)
 {
+    if (!head)
+        return;
+
     void *next = (void *)(*(uintptr_t *)((char *)free_block + NEXT));
     void *prev = (void *)(*(uintptr_t *)((char *)free_block + PREV));
 
@@ -35,17 +41,18 @@ inline void **get_free_list(const size_t size)
         return NULL;
 }
 
-// void print_free_list(void *head)
-// {
-// 	void *current_free_block = head;
+#include <stdio.h>
+void print_free_list(void *head)
+{
+    void *current_free_block = head;
 
-// 	printf("START OF FREE LIST!\n");
+    printf("START OF FREE LIST!\n");
 
-// 	while (current_free_block)
-// 	{
-// 		printf("block size: %ld\n", *(size_t *)current_free_block);
-// 		current_free_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
-// 	}
+    while (current_free_block)
+    {
+        printf("block size: %ld\n", *(size_t *)current_free_block);
+        current_free_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
+    }
 
-// 	printf("END OF FREE LIST!\n");
-// }
+    printf("END OF FREE LIST!\n");
+}

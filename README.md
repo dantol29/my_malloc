@@ -3,9 +3,15 @@
 For each request that is > SMALL, a syscall to mmap is performed
 ![Zone scheme](/zone.png)
 
-## Compile tests
+## Run tests
+
+### Linux
 
 `make re && gcc -g tests/test_complex.c -o test -L. -lft_malloc -Wl,-rpath=. && ./test`
+
+### Mac
+
+`make re && gcc -g tests/test_complex.c -o test -L. -lft_malloc  && ./test`
 
 ## Used functions
 

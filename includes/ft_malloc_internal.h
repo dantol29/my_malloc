@@ -58,6 +58,7 @@ void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free
 void push_to_free_list(void *free_block, void **head);
 void remove_from_free_list(void *free_block, void **head);
 void **get_free_list(const size_t size);
+void print_free_list(void *head);
 
 void *ft_memcpy(void *dest, const void *src, size_t n);
 void align_size(size_t *size);

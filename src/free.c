@@ -54,43 +54,40 @@ void free(void *ptr)
 
         void *footer = (char *)header + size - sizeof(size_t);
         void *prev_footer = (char *)header - sizeof(size_t);
-        void *prev_header = NULL;
         void *next_header = (char *)footer + sizeof(size_t);
         void **free_list_head = get_free_list(size);
 
-        // unset LSB to mark as free
+        // Mark as free by unsettting LSB
         *(size_t *)header = size;
         *(size_t *)footer = size;
 
-        ft_printf("freeing!\n");
+        void *final_header = header;
+        size_t final_size = size;
 
         // Coalescing with prev block
         if (*(size_t *)prev_footer != 0 && !(*(size_t *)prev_footer & 1))
         {
-            prev_header = (char *)prev_footer - *(size_t *)prev_footer + sizeof(size_t);
-
-            size_t new_size = *(size_t *)prev_header + *(size_t *)header;
-            *(size_t *)footer = new_size;
-            *(size_t *)prev_header = new_size;
+            const size_t prev_size = *(size_t *)prev_footer;
+            void *prev_header = (char *)prev_footer - prev_size + sizeof(size_t);
 
             remove_from_free_list(prev_header, free_list_head);
+            final_header = prev_header;
+            final_size = size + prev_size;
         }
 
         // Coalescing with next block
         if (*(size_t *)next_header != 0 && !(*(size_t *)next_header & 1))
         {
-            void *next_footer = (char *)next_header + *(size_t *)next_header - sizeof(size_t);
-
-            size_t new_size = *(size_t *)(next_footer) + *(size_t *)(footer);
-            *(size_t *)((char *)footer - *(size_t *)footer + sizeof(size_t)) = new_size; // update header
-            *(size_t *)next_footer = new_size;
+            const size_t next_size = *(size_t *)next_header;
 
             remove_from_free_list(next_header, free_list_head);
+            final_size += next_size;
         }
 
-        if (prev_header)
-            push_to_free_list(prev_header, free_list_head);
-        else
-            push_to_free_list(header, free_list_head);
+        *(size_t *)final_header = final_size;
+        void *final_footer = (char *)final_header + final_size - sizeof(size_t);
+        *(size_t *)final_footer = final_size;
+
+        push_to_free_list(final_header, free_list_head);
     }
 }

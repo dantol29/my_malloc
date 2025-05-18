@@ -12,7 +12,11 @@ static void *create_large_allocation(const size_t size)
 	while (*((char *)current_zone + METADATA_SIZE) & 1)
 	{
 		if (!current_zone->next)
+		{
 			current_zone = allocate_zone(size, current_zone, NULL, NULL);
+			if (!current_zone)
+				return NULL;
+		}
 		else
 			current_zone = current_zone->next;
 	}
@@ -64,7 +68,6 @@ void *malloc(size_t size)
 		void *next_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
 		if (!next_block)
 		{
-			ft_printf("new zone allocated!\n");
 			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), current_free_block, head);
 			if (!new_zone)
 				return NULL;
@@ -77,11 +80,19 @@ void *malloc(size_t size)
 		current_free_block = next_block;
 	}
 
-	if (current_free_block) // free block found
+	if (current_free_block)
 	{
-		// print_free_list(*head);
 		remove_from_free_list(current_free_block, head);
 		update_metadata(current_free_block, size, head);
+
+		if (!*head) // in case free list is empty
+		{
+			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), NULL, NULL);
+			if (!new_zone)
+				return NULL;
+			push_to_free_list((char *)new_zone + METADATA_SIZE, head);
+		}
+
 		return (char *)current_free_block + sizeof(size_t);
 	}
 

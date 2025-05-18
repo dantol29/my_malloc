@@ -39,7 +39,7 @@ static size_t print_zone(struct s_zone *zone, size_t zone_size)
     return total_bytes_allocated;
 }
 
-void show_alloc_mem()
+void show_alloc_mem() // TODO: double check correctness
 {
     size_t total_bytes = 0;
 
