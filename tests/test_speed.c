@@ -16,14 +16,14 @@ void benchmark_malloc()
     for (int i = 0; i < NUM_ALLOCATIONS; i++)
     {
         pointers[i] = malloc(1024);
-	memset(pointers[i], 'A', 1024);
+        memset(pointers[i], 'A', 1024);
     }
     end = clock();
     printf("Allocation time: %lf ms\n", (double)(end - start) / CLOCKS_PER_SEC * 1000);
 
     // Measure deallocation speed
     start = clock();
-    ifor (int i = 0; i < NUM_ALLOCATIONS; i++)
+    for (int i = 0; i < NUM_ALLOCATIONS; i++)
     {
         free(pointers[i]);
     }

@@ -3,15 +3,16 @@
 
 struct s_heap heap = {0};
 
-static void *create_large_allocation(const size_t aligned_size, struct s_zone *current_zone)
+static void *create_large_allocation(const size_t size)
 {
+	struct s_zone *current_zone = get_zone(size);
 	if (!current_zone)
 		return NULL;
 
 	while (*((char *)current_zone + METADATA_SIZE) & 1)
 	{
 		if (!current_zone->next)
-			current_zone = allocate_zone(aligned_size, current_zone);
+			current_zone = allocate_zone(size, current_zone, NULL, NULL);
 		else
 			current_zone = current_zone->next;
 	}
@@ -21,7 +22,7 @@ static void *create_large_allocation(const size_t aligned_size, struct s_zone *c
 	return (char *)current_zone + METADATA_SIZE + sizeof(size_t); // skip 2 pointers and boundary + header
 }
 
-static void update_metadata(void *current_block, const size_t size)
+static void update_metadata(void *current_block, const size_t size, void **head)
 {
 	// divide block into 2 pieces if request does not occuppy all space
 	if (size < *(size_t *)current_block)
@@ -31,6 +32,8 @@ static void update_metadata(void *current_block, const size_t size)
 
 		*(size_t *)next_header = *(size_t *)current_block - size;
 		*(size_t *)next_footer = *(size_t *)next_header;
+
+		push_to_free_list(next_header, head);
 	}
 
 	// header
@@ -48,48 +51,41 @@ void *malloc(size_t size)
 		return NULL;
 
 	align_size(&size);
+	initialize_zone(size);
 
-	struct s_zone *current_zone = get_zone(size);
-	if (current_zone == NULL)
-		return NULL;
+	if (size > SMALL)
+		return create_large_allocation(size);
 
-	if (size >= SMALL)
-		return create_large_allocation(size, current_zone);
+	void **head = get_free_list(size);
+	void *current_free_block = *head;
 
-	void *current_block = (char *)current_zone + METADATA_SIZE; // skip 2 pointers + boundary
-	const size_t zone_size = get_zone_size(size);
-	size_t taken_bytes = 0;
-	size_t block_size;
-
-	// while bit is set or block is smaller than requested size
-	while (*(size_t *)current_block & 1 || *(size_t *)current_block < size)
+	while (current_free_block && *(size_t *)current_free_block < size)
 	{
-		block_size = *(size_t *)current_block;
-		if (*(size_t *)current_block & 1)
-			block_size -= 1;
-
-		taken_bytes += block_size;
-		if (taken_bytes >= zone_size) // the end of the zone
+		void *next_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
+		if (!next_block)
 		{
-			if (current_zone->next == NULL)
-			{
-				current_zone->next = allocate_zone(zone_size, current_zone);
-				if (current_zone->next == NULL)
-					return NULL;
-			}
+			ft_printf("new zone allocated!\n");
+			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), current_free_block, head);
+			if (!new_zone)
+				return NULL;
 
-			current_zone = current_zone->next;
-			current_block = (char *)current_zone + METADATA_SIZE; // skip 2 pointers + boundary
-			taken_bytes = 0;
-			continue;
+			push_to_free_list((char *)new_zone + METADATA_SIZE, head);
+			current_free_block = *head;
+			break;
 		}
 
-		current_block = (char *)current_block + block_size;
+		current_free_block = next_block;
 	}
 
-	update_metadata(current_block, size);
+	if (current_free_block) // free block found
+	{
+		// print_free_list(*head);
+		remove_from_free_list(current_free_block, head);
+		update_metadata(current_free_block, size, head);
+		return (char *)current_free_block + sizeof(size_t);
+	}
 
-	return (char *)current_block + sizeof(size_t); // skip header
+	return NULL;
 }
 
 __attribute__((constructor)) void init()
@@ -97,9 +93,8 @@ __attribute__((constructor)) void init()
 	ft_printf("Custom library loaded via LD_PRELOAD!\n");
 }
 
-__attribute__((destructor)) void des()
-{
-        ft_printf("END!\n");
-	show_alloc_mem();
-}
-
+// __attribute__((destructor)) void des()
+// {
+// 	ft_printf("----------------\n");
+// 	show_alloc_mem();
+// }

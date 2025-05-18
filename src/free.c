@@ -54,10 +54,13 @@ void free(void *ptr)
         void *footer = (char *)header + size - sizeof(size_t);
         void *prev_footer = (char *)header - sizeof(size_t);
         void *next_header = (char *)footer + sizeof(size_t);
+        void **free_list_head = get_free_list(size);
 
         // unset LSB to mark as free
         *(size_t *)header = size;
         *(size_t *)footer = size;
+
+        push_to_free_list(header, free_list_head);
 
         // Coalescing with prev block
         if (*(size_t *)prev_footer != 0 && !(*(size_t *)prev_footer & 1))
@@ -67,6 +70,8 @@ void free(void *ptr)
             size_t new_size = *(size_t *)prev_header + *(size_t *)header;
             *(size_t *)footer = new_size;
             *(size_t *)prev_header = new_size;
+
+            push_to_free_list(prev_header, free_list_head);
         }
 
         // Coalescing with next block
@@ -77,6 +82,8 @@ void free(void *ptr)
             size_t new_size = *(size_t *)(next_footer) + *(size_t *)(footer);
             *(size_t *)((char *)footer - *(size_t *)footer + sizeof(size_t)) = new_size; // update header
             *(size_t *)next_footer = new_size;
+
+            push_to_free_list(next_header, free_list_head);
         }
     }
 }

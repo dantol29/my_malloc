@@ -16,12 +16,11 @@ inline static size_t get_page_size()
 
 #define METADATA_SIZE sizeof(void *) * 2 + sizeof(size_t) // 2 pointers + start boundary
 
-#define ALIGNING sizeof(void*) * 2 // 16
+#define ALIGNING sizeof(void *) * 2 // 16
 #define TINY 256
 #define SMALL get_page_size()
 #define TINY_ZONE_SIZE get_page_size() * 7 - METADATA_SIZE - sizeof(size_t)
 #define SMALL_ZONE_SIZE get_page_size() * 101 - METADATA_SIZE - sizeof(size_t)
-
 
 // zone memory structure:
 // void* next_zone, void* prev_zone, size_t start_boundary, (zone), size_t end_boundary
@@ -37,7 +36,14 @@ struct s_heap
     struct s_zone *tiny_zone;
     struct s_zone *small_zone;
     struct s_zone *large_zone;
-    struct s_zone *free_zones;
+    void *tiny_free_list_head;
+    void *small_free_list_head;
+};
+
+enum free_ptrs
+{
+    NEXT = sizeof(size_t),
+    PREV = sizeof(size_t) * 2
 };
 
 #pragma GCC visibility push(hidden) // make functions hidden to library users
@@ -45,8 +51,15 @@ struct s_heap
 extern struct s_heap heap;
 
 void *get_zone(const size_t aligned_size);
+void *get_last_zone(const size_t size);
 int get_zone_size(const size_t aligned_size);
-void *allocate_zone(const size_t zone_size, struct s_zone *prev);
+void initialize_zone(const size_t aligned_size);
+void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block, void **head);
+
+void push_to_free_list(void *free_block, void **head);
+void remove_from_free_list(void *free_block, void **head);
+void **get_free_list(const size_t size);
+
 void *ft_memcpy(void *dest, const void *src, size_t n);
 void align_size(size_t *size);
 
