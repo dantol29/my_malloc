@@ -1,4 +1,5 @@
 #include "../includes/ft_malloc_internal.h"
+#include <stdio.h> // perror
 
 static void free_large_allocation(void *ptr, size_t size)
 {
@@ -34,7 +35,7 @@ static void free_large_allocation(void *ptr, size_t size)
     }
 
     if (munmap((void *)beggining, total_size) == -1)
-        return; // perror?
+        perror("Failed to deallocate with munmap");
 }
 
 void free(void *ptr)
@@ -53,6 +54,7 @@ void free(void *ptr)
 
         void *footer = (char *)header + size - sizeof(size_t);
         void *prev_footer = (char *)header - sizeof(size_t);
+        void *prev_header = NULL;
         void *next_header = (char *)footer + sizeof(size_t);
         void **free_list_head = get_free_list(size);
 
@@ -60,18 +62,18 @@ void free(void *ptr)
         *(size_t *)header = size;
         *(size_t *)footer = size;
 
-        push_to_free_list(header, free_list_head);
+        ft_printf("freeing!\n");
 
         // Coalescing with prev block
         if (*(size_t *)prev_footer != 0 && !(*(size_t *)prev_footer & 1))
         {
-            void *prev_header = (char *)prev_footer - *(size_t *)prev_footer + sizeof(size_t);
+            prev_header = (char *)prev_footer - *(size_t *)prev_footer + sizeof(size_t);
 
             size_t new_size = *(size_t *)prev_header + *(size_t *)header;
             *(size_t *)footer = new_size;
             *(size_t *)prev_header = new_size;
 
-            push_to_free_list(prev_header, free_list_head);
+            remove_from_free_list(prev_header, free_list_head);
         }
 
         // Coalescing with next block
@@ -83,7 +85,12 @@ void free(void *ptr)
             *(size_t *)((char *)footer - *(size_t *)footer + sizeof(size_t)) = new_size; // update header
             *(size_t *)next_footer = new_size;
 
-            push_to_free_list(next_header, free_list_head);
+            remove_from_free_list(next_header, free_list_head);
         }
+
+        if (prev_header)
+            push_to_free_list(prev_header, free_list_head);
+        else
+            push_to_free_list(header, free_list_head);
     }
 }

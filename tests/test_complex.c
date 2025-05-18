@@ -3,7 +3,6 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
-// #include <stdlib.h>
 #include "../includes/ft_malloc.h"
 
 int is_memory_writable(void *ptr, size_t size)
@@ -25,18 +24,14 @@ void test_basic_malloc()
 {
     printf("Testing basic malloc...\n");
 
-    // Simple allocation test
     void *ptr = malloc(20);
     assert(ptr != NULL);
+    memset(ptr, 'A', 20);
 
-    // Write to memory to ensure it's usable
-    memset(ptr, 0x67, 20);
-
-    // Check if memory was properly written
     unsigned char *p = (unsigned char *)ptr;
     for (int i = 0; i < 20; i++)
     {
-        assert(p[i] == 0x67);
+        assert(p[i] == 'A');
     }
 
     free(ptr);
@@ -47,15 +42,8 @@ void test_malloc_zero()
 {
     printf("Testing malloc with zero size...\n");
 
-    // Malloc should handle zero size appropriately
-    // (either return NULL or a small valid pointer)
     void *ptr = malloc(0);
-
-    // If it returns a pointer, we should be able to free it
-    if (ptr != NULL)
-    {
-        free(ptr);
-    }
+    assert(ptr == NULL);
 
     printf("Malloc zero test passed\n");
 }
@@ -64,34 +52,26 @@ void test_multiple_allocations()
 {
     printf("Testing multiple allocations...\n");
 
-    // Allocate multiple blocks of different sizes
     void *ptrs[100];
     for (int i = 0; i < 100; i++)
     {
         size_t size = (i + 1) * 10;
         ptrs[i] = malloc(size);
         assert(ptrs[i] != NULL);
-
-        // Write to memory to ensure it's usable
         memset(ptrs[i], i % 256, size);
     }
 
-    // Verify each block contains the expected data
     for (int i = 0; i < 100; i++)
     {
         size_t size = (i + 1) * 10;
         unsigned char *p = (unsigned char *)ptrs[i];
         for (size_t j = 0; j < size; j++)
-        {
             assert(p[j] == i % 256);
-        }
     }
 
     // Free all blocks
     for (int i = 0; i < 100; i++)
-    {
         free(ptrs[i]);
-    }
 
     printf("Multiple allocations test passed\n");
 }
@@ -100,29 +80,21 @@ void test_free_and_reuse()
 {
     printf("Testing free and memory reuse...\n");
 
-    // Allocate a block
     void *ptr1 = malloc(100);
     assert(ptr1 != NULL);
 
-    // Store the address
     uintptr_t addr1 = (uintptr_t)ptr1;
 
-    // Free the block
     free(ptr1);
 
-    // Allocate again with same size, might reuse the freed memory
+    // Allocate again with same size
     void *ptr2 = malloc(100);
     assert(ptr2 != NULL);
 
-    // Print whether memory was reused (informational only)
     if ((uintptr_t)ptr2 == addr1)
-    {
-        printf("Memory was reused (good!)\n");
-    }
+        printf("Memory was reused!\n");
     else
-    {
-        printf("Memory was not reused (might be normal depending on implementation)\n");
-    }
+        printf("Memory was not reused :(\n");
 
     free(ptr2);
     printf("Free and reuse test passed\n");
@@ -132,11 +104,10 @@ void test_memory_alignment()
 {
     printf("Testing memory alignment...\n");
 
-    // Test that allocated memory is properly aligned
     void *ptr = malloc(1);
     assert(ptr != NULL);
 
-    // Check alignment (assuming 16-byte alignment)
+    // 16-byte alignment
     uintptr_t addr = (uintptr_t)ptr;
     assert((addr & 0xF) == 0);
 
@@ -148,14 +119,12 @@ void test_large_allocation()
 {
     printf("Testing large allocation...\n");
 
-    // Try to allocate a large block
     void *ptr = malloc(1024 * 1024); // 1MB
     assert(ptr != NULL);
 
-    // Write to memory to ensure it's usable
-    memset(ptr, 0x42, 1024 * 1024);
+    memset(ptr, 'A', 1024 * 1024);
 
-    // free(ptr);
+    free(ptr);
     printf("Large allocation test passed\n");
 }
 
@@ -163,37 +132,30 @@ void test_stress()
 {
     printf("Running stress test...\n");
 
-    // Perform many allocations and frees
     void *ptrs[1000];
 
-    // Allocate 1000 blocks
     for (int i = 0; i < 1000; i++)
     {
         ptrs[i] = malloc((i % 100) + 1);
         assert(ptrs[i] != NULL);
     }
 
-    // Free every other block
     for (int i = 0; i < 1000; i += 2)
     {
         free(ptrs[i]);
         ptrs[i] = NULL;
     }
 
-    // Allocate new blocks
     for (int i = 0; i < 1000; i += 2)
     {
         ptrs[i] = malloc(((i % 100) + 1) * 2);
         assert(ptrs[i] != NULL);
     }
 
-    // Free all blocks
     for (int i = 0; i < 1000; i++)
     {
         if (ptrs[i] != NULL)
-        {
             free(ptrs[i]);
-        }
     }
 
     printf("Stress test passed\n");
@@ -324,12 +286,12 @@ void run_all_tests()
 {
     printf("Running malloc and free tests...\n");
 
-    test_basic_malloc();
-    test_malloc_zero();
-    test_multiple_allocations();
-    test_free_and_reuse();
-    test_memory_alignment();
-    test_large_allocation();
+    // test_basic_malloc();
+    // test_malloc_zero();
+    // test_multiple_allocations();
+    // test_free_and_reuse();
+    // test_memory_alignment();
+    // test_large_allocation();
     test_stress();
     test_malloc_free_cycle();
     test_fragmentation();

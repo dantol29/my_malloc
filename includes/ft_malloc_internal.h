@@ -1,7 +1,6 @@
 #ifndef FT_MALLOC_INTERNAL_H
 #define FT_MALLOC_INTERNAL_H
 
-#include <stddef.h>   // size_t
 #include <sys/mman.h> // mmap
 #include "../libprintf/ft_printf.h"
 
