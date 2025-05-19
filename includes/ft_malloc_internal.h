@@ -2,7 +2,8 @@
 #define FT_MALLOC_INTERNAL_H
 
 #include <sys/mman.h> // mmap
-#include "../libprintf/ft_printf.h"
+#include <unistd.h>
+#include <stdint.h>
 
 inline static size_t get_page_size()
 {

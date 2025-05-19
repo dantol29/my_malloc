@@ -23,12 +23,12 @@ void remove_from_free_list(void *free_block, void **head, void *header)
     void *next = (void *)(*(uintptr_t *)((char *)free_block + NEXT));
     void *prev = (void *)(*(uintptr_t *)((char *)free_block + PREV));
 
-    if (prev)
+    if (prev && (uintptr_t)prev % ALIGNING == 0)
         *(uintptr_t *)((char *)prev + NEXT) = (uintptr_t)next;
     else
         *head = next;
 
-    if (next)
+    if (next && ((char *)next + PREV) && (uintptr_t)next % ALIGNING == 0)
         *(uintptr_t *)((char *)next + PREV) = (uintptr_t)prev;
 
     *(uintptr_t *)((char *)free_block + NEXT) = 0;
@@ -79,6 +79,15 @@ static void size_t_to_str(size_t num, char *buf, size_t bufsize)
     buf[j] = '\0';
 }
 
+static void safe_write(int fd, const void *buf, size_t count) {
+    ssize_t ret = write(fd, buf, count);
+    if (ret < 0) {
+        // You can log or handle the error here, or ignore it
+        // For silence:
+        (void)ret;
+    }
+}
+
 void print_free_list(void *head)
 {
     void *current_free_block = head;
@@ -87,7 +96,7 @@ void print_free_list(void *head)
     const char block_prefix[] = "block size: ";
     const char newline = '\n';
 
-    write(STDOUT_FILENO, start_msg, sizeof(start_msg) - 1);
+    safe_write(STDOUT_FILENO, start_msg, sizeof(start_msg) - 1);
 
     char numbuf[32]; // buffer to hold size_t as string
 
@@ -96,7 +105,7 @@ void print_free_list(void *head)
         size_t block_size = *(size_t *)current_free_block;
 
         // Write prefix
-        write(STDOUT_FILENO, block_prefix, sizeof(block_prefix) - 1);
+        safe_write(STDOUT_FILENO, block_prefix, sizeof(block_prefix) - 1);
 
         // Convert block size to string
         size_t_to_str(block_size, numbuf, sizeof(numbuf));
@@ -105,16 +114,16 @@ void print_free_list(void *head)
         size_t len = 0;
         while (numbuf[len] != '\0')
             len++;
-        write(STDOUT_FILENO, numbuf, len);
+        safe_write(STDOUT_FILENO, numbuf, len);
 
         // Write newline
-        write(STDOUT_FILENO, &newline, 1);
+        safe_write(STDOUT_FILENO, &newline, 1);
 
         // Move to next free block pointer
         current_free_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
     }
 
-    write(STDOUT_FILENO, end_msg, sizeof(end_msg) - 1);
+    safe_write(STDOUT_FILENO, end_msg, sizeof(end_msg) - 1);
 }
 
 /*#include <stdio.h>

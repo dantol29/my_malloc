@@ -15,8 +15,8 @@ void benchmark_malloc()
     start = clock();
     for (int i = 0; i < NUM_ALLOCATIONS; i++)
     {
-        pointers[i] = malloc(1024);
-        memset(pointers[i], 'A', 1024);
+        pointers[i] = malloc(900);
+        memset(pointers[i], 'A', 90);
     }
     end = clock();
     printf("Allocation time: %lf ms\n", (double)(end - start) / CLOCKS_PER_SEC * 1000);
@@ -34,5 +34,6 @@ void benchmark_malloc()
 int main()
 {
     benchmark_malloc();
+    //show_alloc_mem();
     return 0;
 }

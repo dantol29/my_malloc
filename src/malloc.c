@@ -89,12 +89,12 @@ void *malloc(size_t size)
 		remove_from_free_list(current_free_block, head, NULL);
 		update_metadata(current_free_block, size, head);
 
-		if (!*head) // in case free list is empty
+		/*if (!*head) // in case free list is empty
 		{
 			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), NULL, NULL);
 			if (new_zone)
 				push_to_free_list((char *)new_zone + METADATA_SIZE, head);
-		}
+		}*/
 
 		return (char *)current_free_block + HEADER_SIZE;
 	}
@@ -102,12 +102,12 @@ void *malloc(size_t size)
 	return NULL;
 }
 
-__attribute__((constructor)) void init()
+/*__attribute__((constructor)) void init()
 {
-	write(1, "custom\n", 8);
+	(void)write(1, "custom\n", 8);
 }
 
 __attribute__((destructor)) void des()
 {
-	write(1, "endd!\n", 7);
-}
+	(void)write(1, "endd!\n", 7);
+}*/

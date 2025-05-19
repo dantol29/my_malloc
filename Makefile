@@ -3,8 +3,7 @@ ifeq ($(HOSTTYPE),)
 endif
 
 CC = gcc
-CFLAGS = -g -O0 -Wall -Wextra -Werror -fPIC
-LIBPRINTF = libprintf
+CFLAGS = -g -O2 -Wall -Wextra -Werror -fPIC
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK_NAME = libft_malloc.so
 SRCS = src/utils.c src/free.c src/malloc.c src/realloc.c src/print.c src/free_list.c src/zones.c
@@ -14,8 +13,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME) $(LINK_NAME)
 
 $(NAME): $(OBJS)
-	@make -C $(LIBPRINTF)
-	$(CC) $(CFLAGS) -shared -o $@ $^ -L./$(LIBPRINTF) -lftprintf -Wl,-rpath,'$$ORIGIN/$(LIBPRINTF)'
+	$(CC) $(CFLAGS) -shared -o $@ $^ -Wl,-rpath
 
 $(LINK_NAME): $(NAME)
 	ln -sf $(NAME) $(LINK_NAME)
@@ -25,8 +23,6 @@ clean:
 
 fclean: clean
 	rm -rf $(NAME) $(LINK_NAME)
-	rm -rf $(LIBPRINTF)/*.o
-	rm -rf $(LIBPRINTF)/*.a
 
 re: fclean all
 
