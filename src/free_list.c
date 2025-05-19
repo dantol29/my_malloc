@@ -9,14 +9,12 @@ void push_to_free_list(void *free_block, void **head)
     *(uintptr_t *)((char *)free_block + NEXT) = (uintptr_t)*head;
     *(uintptr_t *)((char *)free_block + PREV) = 0;
 
-    if (*head) {
-	 //print_free_list(*head);
-	 *(uintptr_t *)((char *)*head + PREV) = (uintptr_t)free_block;
-    }
+    if (*head)
+        *(uintptr_t *)((char *)*head + PREV) = (uintptr_t)free_block;
     *head = free_block;
 }
 
-void remove_from_free_list(void *free_block, void **head, void* header)
+void remove_from_free_list(void *free_block, void **head, void *header)
 {
     (void)header;
     if (!head || !free_block)
@@ -30,11 +28,11 @@ void remove_from_free_list(void *free_block, void **head, void* header)
     else
         *head = next;
 
-    if (next) {
-	//print_free_list(heap.tiny_free_list_head);
-	//print_free_list(heap.small_free_list_head);
+    if (next)
         *(uintptr_t *)((char *)next + PREV) = (uintptr_t)prev;
-	}
+
+    *(uintptr_t *)((char *)free_block + NEXT) = 0;
+    *(uintptr_t *)((char *)free_block + PREV) = 0;
 }
 
 inline void **get_free_list(const size_t size)
@@ -47,18 +45,24 @@ inline void **get_free_list(const size_t size)
         return NULL;
 }
 
-static void size_t_to_str(size_t num, char *buf, size_t bufsize) {
+static void size_t_to_str(size_t num, char *buf, size_t bufsize)
+{
     // buf must be big enough (at least 21 bytes for 64-bit)
-    if (bufsize == 0) return;
+    if (bufsize == 0)
+        return;
 
     buf[bufsize - 1] = '\0';
 
     size_t i = bufsize - 2;
-    if (num == 0) {
+    if (num == 0)
+    {
         buf[i] = '0';
         i--;
-    } else {
-        while (num > 0 && i < bufsize) {
+    }
+    else
+    {
+        while (num > 0 && i < bufsize)
+        {
             buf[i] = '0' + (num % 10);
             num /= 10;
             i--;
@@ -68,13 +72,15 @@ static void size_t_to_str(size_t num, char *buf, size_t bufsize) {
     // Shift the string to the front of the buffer
     size_t start = i + 1;
     size_t j = 0;
-    while (buf[start] != '\0' && j < bufsize) {
+    while (buf[start] != '\0' && j < bufsize)
+    {
         buf[j++] = buf[start++];
     }
     buf[j] = '\0';
 }
 
-void print_free_list(void *head) {
+void print_free_list(void *head)
+{
     void *current_free_block = head;
     const char start_msg[] = "START OF FREE LIST!\n";
     const char end_msg[] = "END OF FREE LIST!\n";
@@ -83,9 +89,10 @@ void print_free_list(void *head) {
 
     write(STDOUT_FILENO, start_msg, sizeof(start_msg) - 1);
 
-    char numbuf[32];  // buffer to hold size_t as string
+    char numbuf[32]; // buffer to hold size_t as string
 
-    while (current_free_block) {
+    while (current_free_block)
+    {
         size_t block_size = *(size_t *)current_free_block;
 
         // Write prefix
@@ -96,7 +103,8 @@ void print_free_list(void *head) {
 
         // Write block size string
         size_t len = 0;
-        while (numbuf[len] != '\0') len++;
+        while (numbuf[len] != '\0')
+            len++;
         write(STDOUT_FILENO, numbuf, len);
 
         // Write newline

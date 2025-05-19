@@ -20,10 +20,10 @@ inline static size_t get_page_size()
 #define SMALL get_page_size()
 #define TINY_ZONE_SIZE get_page_size() * 7 - METADATA_SIZE - sizeof(size_t)
 #define SMALL_ZONE_SIZE get_page_size() * 101 - METADATA_SIZE - sizeof(size_t)
-
+#define MIN_SPLIT_SIZE sizeof(size_t) * 4 // 2 pointers + header and footer
+#define HEADER_SIZE sizeof(size_t)
 // zone memory structure:
 // void* next_zone, void* prev_zone, size_t start_boundary, (zone), size_t end_boundary
-
 struct s_zone
 {
     struct s_zone *next;
@@ -56,7 +56,7 @@ void initialize_zone(const size_t aligned_size);
 void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block, void **head);
 
 void push_to_free_list(void *free_block, void **head);
-void remove_from_free_list(void *free_block, void **head, void* header);
+void remove_from_free_list(void *free_block, void **head, void *header);
 void **get_free_list(const size_t size);
 void print_free_list(void *head);
 

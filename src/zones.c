@@ -4,17 +4,17 @@ void initialize_zone(const size_t aligned_size)
 {
     if (aligned_size <= TINY)
     {
-        if (heap.tiny_zone == NULL)
+        if (!heap.tiny_zone)
             heap.tiny_zone = allocate_zone(TINY_ZONE_SIZE, NULL, NULL, &heap.tiny_free_list_head);
     }
     else if (aligned_size <= SMALL)
     {
-        if (heap.small_zone == NULL)
+        if (!heap.small_zone)
             heap.small_zone = allocate_zone(SMALL_ZONE_SIZE, NULL, NULL, &heap.small_free_list_head);
     }
     else
     {
-        if (heap.large_zone == NULL)
+        if (!heap.large_zone)
             heap.large_zone = allocate_zone(aligned_size, NULL, NULL, NULL);
     }
 }
