@@ -1,5 +1,6 @@
 #include "../includes/ft_malloc_internal.h"
 #include "../includes/ft_malloc.h"
+#include <stdio.h>
 
 struct s_heap heap = {0};
 
@@ -14,8 +15,10 @@ static void *create_large_allocation(const size_t size)
 		if (!current_zone->next)
 		{
 			current_zone = allocate_zone(size, current_zone, NULL, NULL);
-			if (!current_zone)
+			if (!current_zone) {
+				write(1, "zopa!\n",7);
 				return NULL;
+			}
 		}
 		else
 			current_zone = current_zone->next;
@@ -29,7 +32,7 @@ static void *create_large_allocation(const size_t size)
 static void update_metadata(void *current_block, const size_t size, void **head)
 {
 	// divide block into 2 pieces if request does not occuppy all space
-	if (size < *(size_t *)current_block)
+	if (size < *(size_t *)current_block && *(size_t *)current_block - size >= sizeof(size_t) * 4)
 	{
 		void *next_footer = (char *)current_block + *(size_t *)current_block - sizeof(size_t);
 		void *next_header = (char *)current_block + size;
@@ -51,6 +54,10 @@ static void update_metadata(void *current_block, const size_t size, void **head)
 
 void *malloc(size_t size)
 {
+	//char buffer[128];
+	//int len = snprintf(buffer, sizeof(buffer), "Number: %ld\n", size);
+	//write(1, buffer, len);
+	
 	if (size == 0)
 		return NULL;
 
@@ -69,8 +76,10 @@ void *malloc(size_t size)
 		if (!next_block)
 		{
 			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), current_free_block, head);
-			if (!new_zone)
+			if (!new_zone) {
+				write(1, "sopa!\n",7);
 				return NULL;
+			}
 
 			push_to_free_list((char *)new_zone + METADATA_SIZE, head);
 			current_free_block = *head;
@@ -82,30 +91,33 @@ void *malloc(size_t size)
 
 	if (current_free_block)
 	{
-		remove_from_free_list(current_free_block, head);
+		remove_from_free_list(current_free_block, head, NULL);
 		update_metadata(current_free_block, size, head);
 
 		if (!*head) // in case free list is empty
 		{
 			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), NULL, NULL);
 			if (!new_zone)
+			{
+				write(1, "popa!\n",7);
 				return NULL;
+			}
 			push_to_free_list((char *)new_zone + METADATA_SIZE, head);
 		}
-
+		//print_free_list(*head);
 		return (char *)current_free_block + sizeof(size_t);
 	}
 
+	write(1, "gopa!\n",7);
 	return NULL;
 }
 
 __attribute__((constructor)) void init()
 {
-	ft_printf("Custom library loaded via LD_PRELOAD!\n");
+	write(1, "custom\n", 8);
 }
 
-// __attribute__((destructor)) void des()
-// {
-// 	ft_printf("----------------\n");
-// 	show_alloc_mem();
-// }
+ __attribute__((destructor)) void des()
+{
+ 	write(1, "endd!\n", 7);
+}

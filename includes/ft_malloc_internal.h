@@ -56,7 +56,7 @@ void initialize_zone(const size_t aligned_size);
 void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block, void **head);
 
 void push_to_free_list(void *free_block, void **head);
-void remove_from_free_list(void *free_block, void **head);
+void remove_from_free_list(void *free_block, void **head, void* header);
 void **get_free_list(const size_t size);
 void print_free_list(void *head);
 

@@ -3,7 +3,7 @@ ifeq ($(HOSTTYPE),)
 endif
 
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
+CFLAGS = -g -O0 -Wall -Wextra -Werror -fPIC
 LIBPRINTF = libprintf
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK_NAME = libft_malloc.so
