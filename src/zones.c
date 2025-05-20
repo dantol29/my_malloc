@@ -5,17 +5,23 @@ void initialize_zone(const size_t aligned_size)
     if (aligned_size <= TINY)
     {
         if (!heap.tiny_zone)
-            heap.tiny_zone = allocate_zone(TINY_ZONE_SIZE, NULL, NULL, &heap.tiny_free_list_head);
+        {
+            heap.tiny_zone = allocate_zone(TINY_ZONE_SIZE, NULL, NULL);
+            push_to_free_list(heap.tiny_zone + METADATA_SIZE, &heap.tiny_free_list_head);
+        }
     }
     else if (aligned_size <= SMALL)
     {
         if (!heap.small_zone)
-            heap.small_zone = allocate_zone(SMALL_ZONE_SIZE, NULL, NULL, &heap.small_free_list_head);
+        {
+            heap.small_zone = allocate_zone(SMALL_ZONE_SIZE, NULL, NULL);
+            push_to_free_list(heap.small_zone + METADATA_SIZE, &heap.small_free_list_head);
+        }
     }
     else
     {
         if (!heap.large_zone)
-            heap.large_zone = allocate_zone(aligned_size, NULL, NULL, NULL);
+            heap.large_zone = allocate_zone(aligned_size, NULL, NULL);
     }
 }
 
@@ -52,7 +58,7 @@ void *get_last_zone(const size_t size)
     return zone;
 }
 
-void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block, void **head)
+void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block)
 {
     struct s_zone *zone = mmap(0, sizeof(void *) * 2 + sizeof(size_t) + zone_size + sizeof(size_t), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
     if (zone == MAP_FAILED)
@@ -69,9 +75,6 @@ void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free
     // set ptrs for explicit free list
     *(uintptr_t *)((char *)zone + METADATA_SIZE + NEXT) = 0;
     *(uintptr_t *)((char *)zone + METADATA_SIZE + PREV) = (uintptr_t)prev_free_block;
-
-    if (head && !*head)
-        *head = (char *)zone + METADATA_SIZE;
 
     return zone;
 }

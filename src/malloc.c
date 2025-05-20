@@ -13,7 +13,7 @@ static void *create_large_allocation(const size_t size)
 	{
 		if (!current_zone->next)
 		{
-			current_zone = allocate_zone(size, current_zone, NULL, NULL);
+			current_zone = allocate_zone(size, current_zone, NULL);
 			if (!current_zone)
 				return NULL;
 		}
@@ -71,7 +71,7 @@ void *malloc(size_t size)
 		void *next_block = (void *)(*(uintptr_t *)((char *)current_free_block + NEXT));
 		if (!next_block)
 		{
-			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), current_free_block, head);
+			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), current_free_block);
 			if (!new_zone)
 				return NULL;
 

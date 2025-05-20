@@ -54,8 +54,8 @@ void free(void *ptr)
         return free_large_allocation(ptr, size);
 
     void *footer = (char *)header + size - sizeof(size_t);
-    void *prev_footer = (char *)header - sizeof(size_t);
-    void *next_header = (char *)footer + sizeof(size_t);
+    //void *prev_footer = (char *)header - sizeof(size_t);
+    //void *next_header = (char *)footer + sizeof(size_t);
     void **free_list_head = get_free_list(size);
 
     // Mark as free by unsettting LSB
@@ -66,7 +66,7 @@ void free(void *ptr)
     size_t final_size = size;
 
     // Coalescing with prev block
-    if (*(size_t *)prev_footer != 0 && !(*(size_t *)prev_footer & 1) && *(size_t *)prev_footer % ALIGNING == 0)
+    /*if (*(size_t *)prev_footer != 0 && !(*(size_t *)prev_footer & 1) && *(size_t *)prev_footer % ALIGNING == 0)
     {
         const size_t prev_size = *(size_t *)prev_footer;
         void *prev_header = (char *)prev_footer - prev_size + sizeof(size_t);
@@ -77,10 +77,10 @@ void free(void *ptr)
             final_header = prev_header;
             final_size = size + prev_size;
         }
-    }
+    }*/
 
     // Coalescing with next block
-    if (*(size_t *)next_header != 0 && !(*(size_t *)next_header & 1) && *(size_t *)next_header % ALIGNING == 0)
+    /*if (*(size_t *)next_header != 0 && !(*(size_t *)next_header & 1) && *(size_t *)next_header % ALIGNING == 0)
     {
         const size_t next_size = *(size_t *)next_header;
         void *next_footer = (char *)next_header + next_size - sizeof(size_t);
@@ -90,7 +90,7 @@ void free(void *ptr)
             remove_from_free_list(next_header, free_list_head, header);
             final_size += next_size;
         }
-    }
+    }*/
 
     *(size_t *)final_header = final_size;
     void *final_footer = (char *)final_header + final_size - sizeof(size_t);

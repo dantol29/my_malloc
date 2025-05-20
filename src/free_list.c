@@ -37,10 +37,26 @@ void remove_from_free_list(void *free_block, void **head, void *header)
 
 inline void **get_free_list(const size_t size)
 {
+    void *new_zone = NULL;
+
     if (size <= TINY)
+    {
+        if (!heap.tiny_free_list_head)
+        {
+            new_zone = allocate_zone(TINY_ZONE_SIZE, NULL, NULL);
+            push_to_free_list((char *)new_zone + METADATA_SIZE, &heap.tiny_free_list_head);
+        }
         return &heap.tiny_free_list_head;
+    }
     if (size <= SMALL)
+    {
+        if (!heap.small_free_list_head)
+        {
+            new_zone = allocate_zone(SMALL_ZONE_SIZE, NULL, NULL);
+            push_to_free_list((char *)new_zone + METADATA_SIZE, &heap.small_free_list_head);
+        }
         return &heap.small_free_list_head;
+    }
     else
         return NULL;
 }

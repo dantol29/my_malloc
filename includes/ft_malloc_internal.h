@@ -55,7 +55,7 @@ void *get_zone(const size_t aligned_size);
 void *get_last_zone(const size_t size);
 int get_zone_size(const size_t aligned_size);
 void initialize_zone(const size_t aligned_size);
-void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block, void **head);
+void *allocate_zone(const size_t zone_size, struct s_zone *prev, void *prev_free_block);
 
 void push_to_free_list(void *free_block, void **head);
 void remove_from_free_list(void *free_block, void **head, void *header);
