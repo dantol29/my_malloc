@@ -1,11 +1,10 @@
 #include "../includes/ft_malloc_internal.h"
-#include <stdio.h> // perror
 #include "../includes/ft_malloc.h"
 
 static void free_large_allocation(void *ptr, size_t size)
 {
     const size_t additional_metadata = sizeof(void *) * 2 + sizeof(size_t) * 2; // 2 pointers and 2 boundaries
-    const size_t total_size = size + additional_metadata;                       // TODO: double check this, might be more
+    const size_t total_size = size + additional_metadata;
 
     struct s_zone *beggining = (struct s_zone *)((char *)ptr - additional_metadata);
     if (beggining == NULL)
@@ -36,7 +35,7 @@ static void free_large_allocation(void *ptr, size_t size)
     }
 
     if (munmap((void *)beggining, total_size) == -1)
-        perror("Failed to deallocate with munmap");
+        return;
 }
 
 void free(void *ptr)

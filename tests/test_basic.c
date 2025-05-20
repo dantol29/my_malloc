@@ -18,9 +18,14 @@ int main()
     void *d = malloc(20000);
     (void)d;
 
+    void *f = malloc(1);
+    (void)f;
+
     free(m);
     free(a);
     free(b);
+    free(c);
+    free(d);
 
-    // show_alloc_mem();
+    show_alloc_mem();
 }

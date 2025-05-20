@@ -1,6 +1,5 @@
 #include "../includes/ft_malloc_internal.h"
 #include "../includes/ft_malloc.h"
-#include <stdio.h>
 
 struct s_heap heap = {0};
 
@@ -88,13 +87,6 @@ void *malloc(size_t size)
 	{
 		remove_from_free_list(current_free_block, head, NULL);
 		update_metadata(current_free_block, size, head);
-
-		/*if (!*head) // in case free list is empty
-		{
-			void *new_zone = allocate_zone(get_zone_size(size), get_last_zone(size), NULL, NULL);
-			if (new_zone)
-				push_to_free_list((char *)new_zone + METADATA_SIZE, head);
-		}*/
 
 		return (char *)current_free_block + HEADER_SIZE;
 	}

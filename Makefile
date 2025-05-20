@@ -13,7 +13,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME) $(LINK_NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -shared -o $@ $^ -Wl,-rpath
+	$(CC) $(CFLAGS) -shared -o $@ $^ 
 
 $(LINK_NAME): $(NAME)
 	ln -sf $(NAME) $(LINK_NAME)

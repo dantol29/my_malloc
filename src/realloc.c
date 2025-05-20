@@ -27,13 +27,11 @@ void *realloc(void *ptr, size_t size)
     if (header == NULL || !(*(size_t *)header & 1))
         return NULL;
 
-    size_t old_size = *(size_t *)header - 1;
+    size_t old_size = *(size_t *)header & ~1UL; // unset LSB
     align_size(&size);
 
     if (old_size < size)
         return reallocate_memory(size, old_size, ptr);
-    else if (old_size > size)
-        return reallocate_memory(size, size, ptr);
 
     return ptr;
 }
