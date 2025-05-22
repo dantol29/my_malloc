@@ -23,12 +23,12 @@ void remove_from_free_list(void *free_block, void **head, void *header)
     void *next = (void *)(*(uintptr_t *)((char *)free_block + NEXT));
     void *prev = (void *)(*(uintptr_t *)((char *)free_block + PREV));
 
-    if (prev && (uintptr_t)prev % ALIGNING == 0)
+    if (prev)
         *(uintptr_t *)((char *)prev + NEXT) = (uintptr_t)next;
     else
         *head = next;
 
-    if (next && ((char *)next + PREV) && (uintptr_t)next % ALIGNING == 0)
+    if (next)
         *(uintptr_t *)((char *)next + PREV) = (uintptr_t)prev;
 
     *(uintptr_t *)((char *)free_block + NEXT) = 0;
