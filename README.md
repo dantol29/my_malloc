@@ -1,7 +1,7 @@
+# Custom Malloc Implementation
+
 ## Malloc's Heap (Tiny and Small zones)
 
-
-For each request that is > SMALL, a syscall to mmap is performed
 ![Zone scheme](/zone.png)
 
 ## Run tests
@@ -22,14 +22,8 @@ For each request that is > SMALL, a syscall to mmap is performed
 ## Features
 
 1. Coalescing
-2. Arenas for small allocations
-
-## Possible improvements
-
-1. A linked list of free blocks to reduce search time
-2. A global variable that points to the last large zone allocation to reduce search time
-3. Carefully chosen zone sizes to find good compromise between space and speed
-4. Return tiny and small zones to OS once empty
+2. Arenas for small and tiny allocations
+3. Explicit free list for O(free blocks) search time
 
 ## The memory translation process
 
